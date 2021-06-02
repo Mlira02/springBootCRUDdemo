@@ -1,49 +1,65 @@
 package com.marcos.springBootCRUDdemo.service;
 
 import com.marcos.springBootCRUDdemo.dao.EmployeeDAO;
+import com.marcos.springBootCRUDdemo.dao.EmployeeRepository;
 import com.marcos.springBootCRUDdemo.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService
 {
-    private EmployeeDAO employeeDAO;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeDAO employeeDAO)
+    public EmployeeServiceImpl(EmployeeRepository theEmployeeRepository)
     {
-        this.employeeDAO = employeeDAO;
+        employeeRepository = theEmployeeRepository;
     }
 
+//    @Transactional is commented out because the spring data JPA uses @Transactional out of the box
+
     @Override
-    @Transactional
+//    @Transactional
     public List<Employee> findAll()
     {
-        return employeeDAO.findAll();
+        return employeeRepository.findAll();
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public Employee findById(int employeeId)
     {
-        return employeeDAO.findById(employeeId);
+        Optional<Employee> result = employeeRepository.findById(employeeId);
+
+        Employee theEmployee = null;
+        if(result.isPresent())
+        {
+            theEmployee = result.get();
+        }
+        else
+        {
+            throw new RuntimeException("Did not find employee id: " + employeeId);
+        }
+        return theEmployee;
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public void save(Employee theEmployee)
     {
-        employeeDAO.save(theEmployee);
+        employeeRepository.save(theEmployee);
     }
 
     @Override
-    @Transactional
+//    @Transactional
     public void deleteById(int employeeId)
     {
-        employeeDAO.deleteById(employeeId);
+        employeeRepository.deleteById(employeeId);
     }
 }
